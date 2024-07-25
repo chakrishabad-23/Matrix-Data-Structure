@@ -1,0 +1,207 @@
+class matrix:
+    def __init__(self):
+        self._matrix=[]
+        row=int(input("Enter the rows in matrix: "))
+        self.row=row
+        for i in range(row):
+            a=[]
+            for j in range(row):
+                a.append(int(input("Enter the {} row, {} column element : ".format(i+1,j+1))))
+            self._matrix.append(a)
+        print(self._matrix)
+    
+    
+    def __str__(self):
+        matrix_str = ""
+        for row in self._matrix:
+            matrix_str += " ".join(map(str, row)) + "\n"
+        return matrix_str
+            
+            
+    def __add__(self,other):
+        result=[]
+        for i in range(self.row):
+            a=[]
+            for j in range(self.row):
+                a.append(self._matrix[i][j]+other._matrix[i][j])
+            result.append(a)
+        for i in result:
+            print(i)
+        return 0
+
+    
+    def __sub__(self,other):
+        result=[]
+        for i in range(self.row):
+            a=[]
+            for j in range(self.row):
+                a.append(self._matrix[i][j]-other._matrix[i][j])
+            result.append(a)
+        for i in result:
+            print(i)
+        return 0
+    
+    
+    def __mul__(self,other):
+        result = [[0 for _ in range(len(self._matrix))] for _ in range(len(self._matrix))]
+        for i in range(len(self._matrix)):
+            for j in range(len(self._matrix)):
+                for k in range(len(self._matrix)):
+                    result[i][j] += self._matrix[i][k] * other._matrix[k][j]
+        for i in result:
+            print(i)
+        return 0
+        
+        
+    def __truediv__(self,other):
+        print("Division of Matrices is not possible")
+        
+        
+    def __eq__(self,other):
+        if self._matrix==other._matrix:
+            print("Both are Equal")
+            return True
+        else:
+            print("Both are not Equal")
+            return False
+            
+            
+    def __ne__(self,other):
+        if self._matrix==other._matrix:
+            print("Both are Equal")
+            return True
+        else:
+            print("Both are not Equal")
+            return False
+            
+    def determinant_of_matrix(self):
+        det = 0
+        if self.row == 2:
+            det = self._matrix[0][0] * self._matrix[1][1] - self._matrix[0][1] * self._matrix[1][0]
+        elif self.row == 3:
+            det = (
+                self._matrix[0][0] * (self._matrix[1][1] * self._matrix[2][2] - self._matrix[1][2] * self._matrix[2][1]) -1*
+                self._matrix[0][1] * (self._matrix[1][0] * self._matrix[2][2] - self._matrix[1][2] * self._matrix[2][0]) +
+                self._matrix[0][2] * (self._matrix[1][0] * self._matrix[2][1] - self._matrix[1][1] * self._matrix[2][0])
+            )
+        else:
+            for c in range(4):
+                sub_matrix = []
+                for i in range(1, 4):
+                    sub_matrix.append([self._matrix[i][j] for j in range(4) if j != c])
+
+                sub_det = (
+                    (sub_matrix[0][0] * (sub_matrix[1][1] * sub_matrix[2][2] - sub_matrix[1][2] * sub_matrix[2][1])) +
+                    -1*(sub_matrix[0][1] * (sub_matrix[1][0] * sub_matrix[2][2] - sub_matrix[1][2] * sub_matrix[2][0])) +
+                    (sub_matrix[0][2] * (sub_matrix[1][0] * sub_matrix[2][1] - sub_matrix[1][1] * sub_matrix[2][0])))
+                det += ((-1) ** c) * self._matrix[0][c] * sub_det
+        return det
+
+
+    def inverse_of_matrix(self):
+        if self.determinant_of_matrix()==0:
+            print("As the matrix is Singular, Inverse is not defined.")
+        else:
+            det_matrix=self.determinant_of_matrix()
+            if (self.row)==2:
+                
+                inv_det = 1 / det_matrix
+                inverse = [[self._matrix[1][1] * inv_det, -1*self._matrix[0][1] * inv_det],[-1*self._matrix[1][0] * inv_det, self._matrix[0][0] * inv_det]]
+            
+            elif (self.row)==3:
+                cofactors = [[
+                self._matrix[1][1] * self._matrix[2][2] - self._matrix[1][2] * self._matrix[2][1],
+                -(self._matrix[1][0] * self._matrix[2][2] - self._matrix[1][2] * self._matrix[2][0]),
+                self._matrix[1][0] * self._matrix[2][1] - self._matrix[1][1] * self._matrix[2][0]],
+                [
+                -(self._matrix[0][1] * self._matrix[2][2] - self._matrix[0][2] * self._matrix[2][1]),
+                self._matrix[0][0] * self._matrix[2][2] - self._matrix[0][2] * self._matrix[2][0],
+                -(self._matrix[0][0] * self._matrix[2][1] - self._matrix[0][1] * self._matrix[2][0])],
+                [
+                self._matrix[0][1] * self._matrix[1][2] - self._matrix[0][2] * self._matrix[1][1],
+                -(self._matrix[0][0] * self._matrix[1][2] - self._matrix[0][2] * self._matrix[1][0]),
+                self._matrix[0][0] * self._matrix[1][1] - self._matrix[0][1] * self._matrix[1][0] ]]
+
+                adjugate = [[cofactors[j][i] for j in range(3)] for i in range(3)]
+                
+                inv_det = 1 / det_matrix
+                inverse = [[adjugate[i][j] * inv_det for j in range(3)] for i in range(3)]
+            else:
+                cofactors = []
+                for i in range(4):
+                    row = []
+                    for j in range(4):
+                        minor = [
+                            [self._matrix[m][n] for n in range(4) if n != j]
+                            for m in range(4) if m != i]
+                        minor_det = (
+                            minor[0][0] * (minor[1][1] * minor[2][2] - minor[1][2] * minor[2][1]) -
+                            minor[0][1] * (minor[1][0] * minor[2][2] - minor[1][2] * minor[2][0]) +
+                            minor[0][2] * (minor[1][0] * minor[2][1] - minor[1][1] * minor[2][0])
+                        )
+                        row.append(((-1) ** (i + j)) * minor_det)
+                    cofactors.append(row)
+
+                adjugate = [[cofactors[j][i] for j in range(4)] for i in range(4)]
+
+                inv_det = 1 / det_matrix
+                inverse = [[adjugate[i][j] * inv_det for j in range(4)] for i in range(4)]
+    
+            return inverse
+        
+    def transpose_of_matrix(self):
+        transpose=[]
+        for i in range(len(self._matrix)):
+            row=[]
+            for j in range(len(self._matrix)):
+                row.append(self._matrix[j][i])
+            transpose.append(row)
+        print(transpose)
+        
+        
+    def adjoint_of_matrix(self):
+        if self.row==2:
+            adj = [[self._matrix[1][1], -1*self._matrix[0][1]], [-1*self._matrix[1][0], self._matrix[0][0]]]
+        elif self.row==3:
+            cofactor_matrix = [
+            [
+            self._matrix[1][1] * self._matrix[2][2] - self._matrix[1][2] * self._matrix[2][1],
+            -1*(self._matrix[1][0] * self._matrix[2][2] - self._matrix[1][2] * self._matrix[2][0]),
+            self._matrix[1][0] * self._matrix[2][1] - self._matrix[1][1] * self._matrix[2][0]
+            ],
+            [
+            -1*(self._matrix[0][1] * self._matrix[2][2] - self._matrix[0][2] * self._matrix[2][1]),
+            self._matrix[0][0] * self._matrix[2][2] - self._matrix[0][2] * self._matrix[2][0],
+            -1*(self._matrix[0][0] * self._matrix[2][1] - self._matrix[0][1] * self._matrix[2][0])
+            ],
+            [
+            self._matrix[0][1] * self._matrix[1][2] - self._matrix[0][2] * self._matrix[1][1],
+            -1*(self._matrix[0][0] * self._matrix[1][2] - self._matrix[0][2] * self._matrix[1][0]),
+            self._matrix[0][0] * self._matrix[1][1] - self._matrix[0][1] * self._matrix[1][0]
+            ]
+            ]
+
+            adj = [[cofactor_matrix[j][i] for j in range(3)] for i in range(3)]
+        else:
+            pass
+
+    def exponent_of_matrix(self):
+        exp=int(input("Enter the exponent : "))
+        result = [[0 for _ in range(len(self._matrix))] for _ in range(len(self._matrix))]
+        for _ in range(exp):
+            for i in range(len(self._matrix)):
+                for j in range(len(self._matrix)):
+                    for k in range(len(self._matrix)):
+                        result[i][j] += self._matrix[i][k] * self._matrix[k][j]
+        for i in result:
+            print(i)
+        
+                    
+    def scalar_multiplication_of_matrix(self):
+        scalar=int(input("Enter a number to be multiplied : "))
+        for i in range(len(self._matrix)):
+            for j in range(len(self._matrix)):
+                self._matrix[i][j]=scalar*self._matrix[i][j]
+        for i in self._matrix:
+            print(i)
+        
